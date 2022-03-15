@@ -11,7 +11,7 @@ class PersonController extends AbstractController
     #[Route('/person', name: 'app_person')]
     public function index(): Response
     {
-        return $this->render('person/index.html.twig', [
+        return $this->render('person/login.html.twig', [
             'controller_name' => 'PersonController',
         ]);
     }

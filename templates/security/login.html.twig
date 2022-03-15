@@ -1,0 +1,32 @@
+{% extends 'blog-layout.html.twig' %}
+
+{% block title %}
+{% endblock %}
+
+{% block body %}
+    <div>
+
+        <div class="row justify-content-center">
+
+
+            {% if error is not null %}
+                <div class="alert alert-danger">
+
+                    {{ error.getMessage }}
+                </div>
+            {% endif %}
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label">Id</label>
+                    <input class="form-control" type="text" name="_username" value="{{ userName }}">
+                    <label class="form-label">Password</label>
+                    <input class="form-control" type="password" name="_password">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Valider</button>
+                <input type="hidden" name="_target_path" value="blog_home">
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

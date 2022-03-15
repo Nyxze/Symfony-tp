@@ -9,3 +9,6 @@ kernel:
 homepage:
     path: /homepage
     controller: App\Controller\HomeController::homeAction
+
+app_logout:
+    path: /logout

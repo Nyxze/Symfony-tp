@@ -9,14 +9,37 @@
 
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('blog_list') }}">
-                        tous les articles
+                        Tout les articles
                     </a>
                 </li>
+                {% if is_granted('ROLE_AUTHOR') %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('blog_new_article') }}">
                         Nouvel article
                     </a>
                 </li>
+                {% endif %}
+                {% if app.user is not null %}
+                <li class="navbar-text">
+                    {{ app.user.fullName }}
+
+                </li>
+
+                    <li>
+                        <a class="nav-link" href="{{ path('app_logout') }}">
+                            Deco
+                        </a>
+                    </li>
+                    {% else %}
+
+                        <li>
+                            <a class="nav-link" href="{{ path('app_login') }}">
+                                Login
+                            </a>
+                        </li>
+
+                 {% endif %}
+
 
             </ul>
             <form class="d-flex" action="{{ path('blog_search') }}" method="get">

@@ -31,7 +31,7 @@ class HomeController extends AbstractController{
 
 
 
-        return $this->render("home/index.html.twig", [
+        return $this->render("home/login.html.twig", [
             "age" => $age,
             "userName" => $userName,
             "appNameFromController" => $this->getParameter("app_name")

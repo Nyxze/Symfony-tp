@@ -12,12 +12,11 @@
             crossorigin="anonymous"></script>
 </head>
 <body style="background-color: bisque" class="container-fluid">
+{{ include('blog/_navbar.html.twig') }}
     <div class="row justify-content-center">
-        <div class="p-4 col-md-8">
+        <div class="p-4 col-md-8 mt-5">
             <h1>{{ siteName }}</h1>
-            {% block message %}
-                <p>je suis le template</p>
-            {% endblock %}
+
 
             {% block body %}{% endblock %}
         </div>

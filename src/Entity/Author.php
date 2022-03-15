@@ -6,9 +6,11 @@ use App\Repository\AuthorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: AuthorRepository::class)]
-class Author
+class Author implements UserInterface,PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,6 +28,30 @@ class Author
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Article::class)]
     private Collection $articles;
+
+    #[ORM\Column(type: 'string',length: 50, unique: true )]
+    private string $email;
+
+    #[ORM\Column(type: 'string',length: 128)]
+    private string $hashPswd;
+
+    private string $plainPassword;
+
+    /**
+     * @return string
+     */
+    public function getPlainPassword(): string
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * @param string $plainPassword
+     */
+    public function setPlainPassword(string $plainPassword): void
+    {
+        $this->plainPassword = $plainPassword;
+    }
 
     public function __construct()
     {
@@ -60,6 +86,7 @@ class Author
 
         return $this;
     }
+
 
     public function getNationality(): ?string
     {
@@ -113,5 +140,62 @@ class Author
         }
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+
+        return ["ROLE_AUTHOR"];
+
+
+
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+
+        return $this->email;
+
+         }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getHashPswd(): ?string
+    {
+        return $this->hashPswd;
+    }
+
+    public function setHashPswd(string $hashPswd): self
+    {
+        $this->hashPswd = $hashPswd;
+
+        return $this;
+    }
+
+    public function setPassword(string $hashPswd): self
+    {
+        $this->hashPswd =$hashPswd;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->hashPswd;
     }
 }
