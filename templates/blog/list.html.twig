@@ -5,21 +5,25 @@
     <div class="col-md-8">
         <h1>{{ title }}</h1>
 
-        <p>Il y a {{ articleList | length }} articles </p>
+        <p>Il y a {{ articleList.totalItemCount }} articles </p>
+        <p>{{ articleList.page ? articleList.page:1 }} sur {{ articleList.pageCount }}</p>
 
         <table class="table">
             <thead>
             <tr>
-                <th>Titre</th>
-                <th>Auteur</th>
-                <th>Date de publication</th>
+
+                <th class="{{ articleList.isSorted('p.title')?'sorted':'' }}">
+                    {{ knp_pagination_sortable(articleList,'Titre','p.title') }}</th>
+                <th class="">{{ knp_pagination_sortable(articleList,'Auteur','a.lastName') }}</th>
+                <th class="{{ articleList.isSorted('p.createdAt')?'sorted':'' }}" >{{ knp_pagination_sortable(articleList,'Date de publication','p.createdAt') }}</th>
+
             </tr>
             </thead>
             <tbody>
             {% for article in articleList %}
                 <tr>
                     <td>
-                        <a href="{{ path('blog_details', {'id': article.id}) }}">
+                        <a href="{{ path('blog_details', {'slug': article.slug}) }}">
                             {{ article.title | capitalize }}
                         </a>
                     </td>
@@ -33,6 +37,11 @@
             {% endfor %}
             </tbody>
         </table>
+        <div class="pagination">
+            {{ knp_pagination_render(articleList) }}
+
+
+        </div>
     </div>
 
 {% endblock %}

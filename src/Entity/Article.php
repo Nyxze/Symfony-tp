@@ -10,10 +10,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
+#[Gedmo\Loggable()]
 class Article implements UploadInterface
 {
     #[ORM\Id]
@@ -29,6 +31,7 @@ class Article implements UploadInterface
         maxMessage: 'Le titre ne peut faire plus de {{ limit }} caractères'
     )
     ]
+    #[Gedmo\Versioned]
     private string $title;
 
     #[ORM\Column(type: 'text')]
@@ -36,6 +39,7 @@ class Article implements UploadInterface
         min: 8,
         minMessage: 'Le texte ne peut faire moins de {{ limit }} caractères'
     )]
+    #[Gedmo\Versioned]
     private string $content;
 
     #[ORM\Column(type: 'datetime')]
@@ -59,6 +63,10 @@ class Article implements UploadInterface
 
     #[Assert\Image()]
     private ?UploadedFile $uploadedFile = null;
+
+    #[ORM\Column(type:'string', length: 255, unique:true)]
+    #[Gedmo\Slug(fields: ['title'])]
+    private $slug;
 
     #[ORM\ManyToMany(
         targetEntity: Tag::class,
@@ -218,6 +226,7 @@ class Article implements UploadInterface
 
     #[ORM\PrePersist()]
     public function prePersistEvent(): void{
+        if(empty($this->createdAt))
         $this->createdAt = new DateTime();
     }
 
@@ -262,6 +271,18 @@ class Article implements UploadInterface
     public function removeTag(Tag $tag): self
     {
         $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }

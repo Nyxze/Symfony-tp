@@ -38,6 +38,7 @@ class AuthorFixtures extends Fixture implements OrderedFixtureInterface
                 ->setNationality(
                     $this->faker->randomElement(self::$nationalities)
                 );
+            $author->setPlainPassword('123');
             $author->setHashPswd($this->pswEncoder->hashPassword($author,'123'));
             $manager->persist($author);
             // Ajout de l'auteur en référence pour une utilisation

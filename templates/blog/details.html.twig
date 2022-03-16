@@ -15,7 +15,7 @@
             <div class="{{ article.hasImage? 'col-7':'col-12' }}">
                 <h1>{{ article.title | capitalize }}</h1>
                 <p>
-                    publié le : {{ article.createdAt | date('d/m/Y') }}
+                    publié le : {{ article.createdAt | ago(locale='fr') }}
                 </p>
                 <p>
                     par : {{ article.author.fullName }}
@@ -39,7 +39,7 @@
 
         <hr>
         <div>
-            {{ article.content }}
+            {{ article.content | markdown_to_html }}
         </div>
 
         <hr>
@@ -75,8 +75,57 @@
                     </div>
                     <hr class="mb-4">
                 {% endfor %}
+
             </div>
         </div>
+        <h3>
+            Versions
+        </h3>
+        <table class="table">
+            <thead>
+
+            <tr>
+                <th>
+                   Versions
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Content
+                </th>
+                <th>
+
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in versionList %}
+            <tr>
+                <td>
+
+                    {{ item.version }}
+                </td>
+                <td>
+                    {{ item.loggedAt | date }}
+                </td>
+                <td>
+                    <ul>
+
+                    {% for key, val in item.data %}
+                     <li>
+                         {{ key }}={{ val }}
+                     </li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <a href="{{ path('blog_revert', {'id': item.objectId, 'version':item.version})}}">Voir cette version</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 
 {% endblock %}

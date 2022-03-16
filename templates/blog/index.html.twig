@@ -4,6 +4,7 @@
 
 {% block body %}
     <div class="row">
+       <img src="{{ asset('build/images/test.jpg') }}">
         {% for article in articleList %}
             <div class="col-md-6">
                 <h4>{{ article.title | capitalize}}</h4>
@@ -12,7 +13,7 @@
                     par : {{ article.author.fullName }}
                 </p>
                 <p>{{ article.excerpt(20) }} ...
-                    <a href="{{ path('blog_details', {'id': article.id }) }}">En savoir plus</a>
+                    <a href="{{ path('blog_details', {'slug': article.slug }) }}">En savoir plus</a>
                 </p>
 
             </div>

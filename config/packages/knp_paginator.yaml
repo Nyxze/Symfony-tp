@@ -1,0 +1,7 @@
+knp_paginator:
+  page_range: 10
+  template:
+    pagination: '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig'
+    sortable: '@KnpPaginator/Pagination/bootstrap_v5_bi_sortable_link.html.twig'
+parameters:
+  page_size: 12

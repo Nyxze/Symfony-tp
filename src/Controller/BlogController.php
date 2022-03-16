@@ -14,6 +14,9 @@ use App\Repository\CategoryRepository;
 use App\Service\PhotoUploader;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
+use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -55,7 +58,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/details/{id<\d+>}', name: 'blog_details')]
+    #[Route('/details/{slug}', name: 'blog_details')]
     public function details(
         EntityManagerInterface $manager,
         Request $request,
@@ -84,12 +87,16 @@ class BlogController extends AbstractController
 
             $formView = $form->createView();
         }
-
+        //Gestion des versions
+        $logEntryRepository = $manager->getRepository('Gedmo:LogEntry');
+        $versionList= $logEntryRepository->getLogEntries($article);
+        dump($versionList);
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
             [
                 'article' => $article,
-                'commentForm' => $formView
+                'commentForm' => $formView,
+                'versionList'=>$versionList
             ]
         );
 
@@ -97,9 +104,14 @@ class BlogController extends AbstractController
     }
 
     #[Route('/list', name: 'blog_list')]
-    public function list(): Response {
-        $articleList = $this->repository->findBy([], ['createdAt' => 'DESC']);
+    public function list(Request $request, PaginatorInterface $paginator): Response {
 
+        $articleList = $paginator->paginate(
+            $this->repository->getAllArticlesQuery(),
+            $request->query->getint('page',1),$this->getParameter('page_size')
+
+        );
+//        $articleList = $this->repository->findBy([], ['createdAt' => 'DESC']);
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
             [
@@ -118,6 +130,8 @@ class BlogController extends AbstractController
     #[ParamConverter('author', options: ['id' => 'authorId'])]
     public function articleByAuthor(
         AuthorRepository $authorRepository,
+        Request $request,
+        PaginatorInterface $paginator,
         Author $author): Response {
 
         //$author = $authorRepository->findOneById($authorId);
@@ -126,7 +140,11 @@ class BlogController extends AbstractController
             $this->getTwigParametersForSideBar(),
             [
                 'title' => 'Liste des articles de '.$author->getFullName(),
-                'articleList' => $author->getArticles()
+                'articleList' => $paginator->paginate(
+                    $this->repository->getArticlesByAuthors($author),
+                $request->query->get('page',1),
+                    $this->getParameter('page_size')
+                )
             ]
         );
 
@@ -140,6 +158,8 @@ class BlogController extends AbstractController
     #[Entity('category', expr: "repository.find(categoryId)")]
     public function articleByCategory(
         CategoryRepository $categoryRepository,
+        PaginatorInterface $paginator,
+        Request $request,
         Category $category): Response {
 
         //$category = $categoryRepository->findOneById($categoryId);
@@ -148,7 +168,7 @@ class BlogController extends AbstractController
             $this->getTwigParametersForSideBar(),
             [
                 'title' => 'Liste des articles parlant de '.$category->getCategoryName(),
-                'articleList' => $category->getArticles()
+                'articleList' => $this->getPagination($this->repository->getArticlesByCategory($category),$paginator,$request)
             ]
         );
 
@@ -159,26 +179,26 @@ class BlogController extends AbstractController
     }
 
     #[Route('/search', name: 'blog_search')]
-    public function search(Request $request): Response{
+    public function search(Request $request,PaginatorInterface $paginator): Response{
         $searchTerm = $request->query->get('search');
         $searchTerm = trim($searchTerm);
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
             [
                 'title' => "Liste des articles contenant : $searchTerm",
-                'articleList' => $this->repository->getArticleBySearchTerm($searchTerm)
+                'articleList' => $this->getPagination($this->repository->getArticleBySearchTerm($searchTerm),$paginator,$request)
             ]
         );
         return $this->render('blog/list.html.twig', $params);
     }
 
     #[Route('/by-year/{year<\d{4}>}', name: 'blog_by_year')]
-    public function articleByYear(int $year): Response{
+    public function articleByYear(int $year,Request $request, PaginatorInterface $paginator): Response{
         $params = array_merge(
             $this->getTwigParametersForSideBar(),
             [
                 'title' => "Liste des articles pour l'année $year",
-                'articleList' => $this->repository->getArticlesByYear($year)
+                'articleList' => $this->getPagination($this->repository->getArticlesByYear($year),$paginator,$request)
             ]
         );
         return $this->render('blog/list.html.twig', $params);
@@ -254,5 +274,28 @@ class BlogController extends AbstractController
         );
 
         return $this->render('blog/list.html.twig', $params);
+    }
+
+    #[Route('/revert/{id<\d+>}/{version}<\d+>',name:'blog_revert')]
+    public function revertEntity(Article $article, int $version,
+                                 LogEntryRepository $logEntryRepository,
+                                EntityManagerInterface $manager){
+
+        $logEntryRepository->revert($article,$version);
+        $manager->persist($article);
+        $manager->flush();
+
+        return $this->redirectToRoute('blog_details',['slug'=>$article->getSlug()]);
+
+
+    }
+
+    private function getPagination(Query $query, PaginatorInterface $paginator, Request $request ){
+
+        return $paginator->paginate(
+            $query,
+            $request->query->getint('page',1),$this->getParameter('page_size')
+
+        );
     }
 }

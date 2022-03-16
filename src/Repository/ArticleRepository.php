@@ -3,10 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Article;
+use App\Entity\Author;
+use App\Entity\Category;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -98,7 +101,7 @@ class ArticleRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getArticleBySearchTerm(string $searchTerm): array{
+    public function getArticleBySearchTerm(string $searchTerm): Query{
         $qb = $this->createQueryBuilder('p')
             ->where('p.title LIKE :search 
                     OR p.content LIKE :search 
@@ -111,7 +114,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->orderBy('p.createdAt', 'DESC')
             ->setParameter(':search', "%$searchTerm%");
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     public function getArticlesGroupedByYears(): array{
@@ -124,22 +127,56 @@ class ArticleRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getArticlesByYear(int $year): array{
+    public function getArticlesByYear(int $year): Query{
         return $this->createQueryBuilder('p')
             ->select('p')
             ->where('year(p.createdAt) = :year')
+            ->join('p.author','a')
             ->setParameter(':year', $year)
             ->orderBy('p.createdAt', 'DESC')
-            ->getQuery()->getResult();
+            ->getQuery();
     }
 
-    public function getArticlesByDate(DateTime $start, DateTime $end): array{
+    public function getArticlesByDate(DateTime $start, DateTime $end): Query{
         return $this->createQueryBuilder('p')
             ->select('p')
             ->where('p.createdAt BETWEEN :start AND :end')
+            ->join('p.author','a')
             ->orderBy('p.createdAt', 'DESC')
             ->setParameter(':start', $start)
             ->setParameter(':end', $end)
-            ->getQuery()->getResult();
+            ->getQuery();
+    }
+    public function  getAllArticlesQuery(){
+
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->join('p.author','a')
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery();
+    }
+
+    public function getArticlesByAuthors(Author $author){
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->join('p.author','a')
+            ->where('a.id =:authorId')
+            ->setParameter('authorId',$author->getId())
+            ->orderBy('p.createdAt','DESC')
+            ->getQuery()
+            ;
+
+    }
+
+    public function getArticlesByCategory(Category $category){
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->join('p.category','c')
+            ->join('p.author','a')
+            ->where('c.id =:categoryId')
+            ->setParameter('categoryId',$category->getId())
+            ->orderBy('p.createdAt','DESC')
+            ->getQuery()
+            ;
     }
 }
