@@ -74,10 +74,14 @@ class Article implements UploadInterface
         cascade: ['persist'])]
     private Collection $tags;
 
+
+
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->commentWaitingList = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -286,4 +290,11 @@ class Article implements UploadInterface
 
         return $this;
     }
+
+
+
+
+
+
+
 }

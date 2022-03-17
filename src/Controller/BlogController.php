@@ -11,6 +11,7 @@ use App\Form\CommentType;
 use App\Repository\ArticleRepository;
 use App\Repository\AuthorRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\CommentRepository;
 use App\Service\PhotoUploader;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -61,6 +62,7 @@ class BlogController extends AbstractController
     #[Route('/details/{slug}', name: 'blog_details')]
     public function details(
         EntityManagerInterface $manager,
+        CommentRepository $commentRepository,
         Request $request,
         Article $article): Response{
 
@@ -79,10 +81,11 @@ class BlogController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+
                 $manager->persist($comment);
                 $manager->flush();
 
-                return $this->redirectToRoute('blog_details', ['id' => $article->getId()]);
+                return $this->redirectToRoute('blog_details', ['slug' => $article->getSlug()]);
             }
 
             $formView = $form->createView();
@@ -96,7 +99,8 @@ class BlogController extends AbstractController
             [
                 'article' => $article,
                 'commentForm' => $formView,
-                'versionList'=>$versionList
+                'versionList'=>$versionList,
+                'comments'=>$commentRepository->findBy(['approved'=>true])
             ]
         );
 
@@ -298,4 +302,5 @@ class BlogController extends AbstractController
 
         );
     }
+
 }

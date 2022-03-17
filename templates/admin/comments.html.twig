@@ -1,0 +1,23 @@
+{% extends 'blog-layout.html.twig' %}
+{% block body %}
+<ul>
+
+
+{% for comment in comments %}
+    <li>
+        <p>
+
+        {{ comment.title }}
+        </p>
+        <p>
+            {{ comment.content }}
+        </p>
+    </li>
+    <a href="{{ path('admin_comments_moderate',{'approved':1,'id':comment.id} ) }}">Approve</a>
+    <a href="{{ path('admin_comments_moderate',{'approved':0,'id':comment.id} ) }}">Delete</a>
+
+
+
+{% endfor %}
+</ul>
+{% endblock %}

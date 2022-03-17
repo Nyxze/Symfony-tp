@@ -59,7 +59,8 @@
                 {% endif %}
             </div>
             <div class="col-md-8">
-                {% for comment in article.comments %}
+                {% for comment in comments %}
+
                     <p>Le
                         {{ comment.createdAt | date('d/m/Y') }}
                         à {{ comment.createdAt | date('H:i') }}

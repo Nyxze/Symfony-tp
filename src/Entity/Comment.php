@@ -40,6 +40,12 @@ class Comment
     #[ORM\ManyToOne(targetEntity: Article::class, inversedBy: 'comments')]
     private Article $article;
 
+    #[ORM\Column(type: 'boolean')]
+    private $approved = false;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $approvedAt;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -101,6 +107,30 @@ class Comment
     public function setArticle(?Article $article): self
     {
         $this->article = $article;
+
+        return $this;
+    }
+
+    public function getApproved(): ?bool
+    {
+        return $this->approved;
+    }
+
+    public function setApproved(bool $approved): self
+    {
+        $this->approved = $approved;
+
+        return $this;
+    }
+
+    public function getApprovedAt(): ?\DateTimeInterface
+    {
+        return $this->approvedAt;
+    }
+
+    public function setApprovedAt(?\DateTimeInterface $approvedAt): self
+    {
+        $this->approvedAt = $approvedAt;
 
         return $this;
     }

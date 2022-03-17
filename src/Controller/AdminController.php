@@ -3,21 +3,27 @@
 namespace App\Controller;
 
 use App\Entity\Admin;
+use App\Entity\Article;
+use App\Entity\Comment;
 use App\Form\AdminType;
+use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin')]
+#[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
-    #[Route('/', name: 'admin_index')]
-    public function index(): Response
+    #[Route('/moderate', name: 'comment_list')]
+    public function moderate(CommentRepository $commentRepository): Response
     {
-        return $this->render('admin/index.html.twig', [
-            'controller_name' => 'AdminController',
+        $pendingComments = $commentRepository->findBy(['approvedAt'=>null]);
+        return $this->render('admin/comments.html.twig', [
+            'comments' => $pendingComments,
         ]);
     }
 
@@ -38,5 +44,15 @@ class AdminController extends AbstractController
             'adminForm' => $form->createView(),
         ]);
     }
+    #[Route('/comment/moderate/{id<\d+>}/{approved}', name: 'admin_comments_moderate')]
+    public function moderateComments(Comment $comment, bool $approved, EntityManagerInterface $manager){
+        $comment->setApproved($approved)
+            ->setApprovedAt(new \DateTime());
 
+        $manager->persist($comment);
+        $manager->flush();
+
+        return $this->redirectToRoute('comment_list');
+
+    }
 }
