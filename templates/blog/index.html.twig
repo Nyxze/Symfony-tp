@@ -1,6 +1,9 @@
 {% extends 'blog-layout.html.twig' %}
 
-{% block title %}Mon Blog{% endblock %}
+{% block title %}
+
+    {{ 'blog.home.title'| trans }}
+{% endblock %}
 
 {% block body %}
     <div class="row">

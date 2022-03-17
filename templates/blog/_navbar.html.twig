@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{ path('blog_home') }}">Mon blog</a>
+        <a class="navbar-brand" href="{{ path('blog_home') }}"> {{ 'blog.home.title'|trans }} </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -9,13 +9,13 @@
 
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('blog_list') }}">
-                        Tout les articles
+                        {{ 'nav.all-articles'|trans }}
                     </a>
                 </li>
                 {% if is_granted('ROLE_AUTHOR') %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('blog_new_article') }}">
-                        Nouvel article
+                        {{ 'nav.new-article'|trans }}
                     </a>
                 </li>
                 {% endif %}

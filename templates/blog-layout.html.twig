@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Welcome!{% endblock %}</title>
+    <title>{% block title %}{{'blog.home.title'|trans}}{% endblock %}</title>
     {% block style %}
     {{ encore_entry_link_tags('app') }}
     {% endblock %}
@@ -33,7 +33,7 @@
 
         <div class="row">
             <h2>
-                <span class="fa fa-home">Hello</span>
+                <span class="fa fa-home">{{'blog.welcome.message'|trans}}</span>
                 <button class="btn-danger">Yolo</button>
             </h2>
             {% block body %}{% endblock %}

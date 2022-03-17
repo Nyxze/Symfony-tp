@@ -24,7 +24,7 @@ class Article implements UploadInterface
     private int $id;
 
     #[ORM\Column(type: 'string', length: 128)]
-    #[Assert\NotBlank(message: 'Le titre ne peut être vide')]
+    #[Assert\NotBlank(message: 'title.validator')]
     #[Assert\Length(
         min:10, max: 20,
         minMessage: 'Le titre ne peut faire moins de {{ limit }} caractères',
@@ -73,6 +73,9 @@ class Article implements UploadInterface
         inversedBy: 'articles',
         cascade: ['persist'])]
     private Collection $tags;
+
+    #[ORM\ManyToOne(targetEntity: Author::class)]
+    private $coAuthor;
 
 
 
@@ -287,6 +290,18 @@ class Article implements UploadInterface
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getCoAuthor(): ?Author
+    {
+        return $this->coAuthor;
+    }
+
+    public function setCoAuthor(?Author $coAuthor): self
+    {
+        $this->coAuthor = $coAuthor;
 
         return $this;
     }

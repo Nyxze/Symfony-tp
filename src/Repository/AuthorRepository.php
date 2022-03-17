@@ -79,4 +79,9 @@ class AuthorRepository extends ServiceEntityRepository
             ->select('p')->orderBy('p.firstName','ASC')
             ->getQuery()    ;
     }
+    public function getPotentialCoAuthor(Author $author){
+        return $this->createQueryBuilder('a')->select('a')
+            ->where('a.id != :authorId')
+            ->setParameter('authorId',$author->getId());
+    }
 }

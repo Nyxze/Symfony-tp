@@ -1,0 +1,8 @@
+blog:
+  home:
+    title: Mon blog
+  welcome:
+    message: Bienvenue
+nav:
+  all-articles: Tout les articles
+  new-article: Nouvel article

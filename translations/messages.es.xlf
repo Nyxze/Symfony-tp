@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr" target-language="es" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="_d_7W.z" resname="blog.home.title">
+        <source>blog.home.title</source>
+        <target>__blog.home.title</target>
+      </trans-unit>
+      <trans-unit id="iXWd2Qv" resname="nav.all-articles">
+        <source>nav.all-articles</source>
+        <target>__nav.all-articles</target>
+      </trans-unit>
+      <trans-unit id="Wsu1wVs" resname="nav.new-article">
+        <source>nav.new-article</source>
+        <target>__nav.new-article</target>
+      </trans-unit>
+      <trans-unit id=".Qqxfgw" resname="blog.welcome.message">
+        <source>blog.welcome.message</source>
+        <target>__blog.welcome.message</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
